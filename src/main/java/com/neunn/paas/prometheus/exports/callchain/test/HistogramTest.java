@@ -15,21 +15,43 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 public class HistogramTest {
-    private Histogram histogram = Histogram.build().name("prometheus_callchain_test_counter").help("帮助文档-Histogram")
-            .labelNames("user","test").namespace("PAAS").subsystem("TEST").buckets(1,2,3,4,5,6,7,8,9,10)
-            .register();
     private ScheduledFuture<?> applicationRegisterFuture = null;
-    private Random random = new Random(10);
-
+    private Random random = new Random(1);
+    private double [] buckets={0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1};
+    private Histogram histogram = Histogram.build().name("prometheus_callchain_test_histogram").help("帮助文档-Histogram")
+            .labelNames("user","test").namespace("PAAS").subsystem("TEST").buckets(buckets)
+            .register();
     @PostConstruct
     public void init() {
         applicationRegisterFuture=Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(()->{
-            Histogram.Timer timerSongmy=histogram.labels("songmy","dd").startTimer();
-            Histogram.Timer timerWbg=histogram.labels("wbg","ee").startTimer();
-            Histogram.Timer timerLp=histogram.labels("lp","ff").startTimer();
-            Histogram.Timer timerTr=histogram.labels("tr","hh").startTimer();
-
-
+            histogram.labels("songmy","dd").time(()->{
+                try {
+                    Thread.sleep((long) (1000*buckets[random.nextInt(10)]));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+            histogram.labels("wbg","ee").time(()->{
+                try {
+                    Thread.sleep(1000*random.nextInt(10));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+            histogram.labels("lp","ff").time(()->{
+                try {
+                    Thread.sleep(1000*random.nextInt(10));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+            histogram.labels("wz","gg").time(()->{
+                try {
+                    Thread.sleep(1000*random.nextInt(10));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
 
         },0,1,TimeUnit.SECONDS);
     }

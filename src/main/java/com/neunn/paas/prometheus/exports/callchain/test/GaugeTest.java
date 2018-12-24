@@ -26,7 +26,6 @@ public class GaugeTest {
         applicationRegisterFuture = Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
                 () -> {
                     try {
-                        gauge.setToCurrentTime();
                         gauge.labels("sonmy","dd").inc(random.nextInt(5) + 1);
                         gauge.labels("wubg","ee").inc(random.nextInt(5) + 1);
                         gauge.labels("lp","ff").inc(random.nextInt(5) + 1);
